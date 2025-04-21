@@ -2,15 +2,15 @@ import socket
 import json
 import threading
 from db.UserDBInterface import UserDBInterface
-from user_action_strategies.user_action_strategy import user_action_register, user_action_login, user_action_strategy, user_action_send_email, user_action_get_emails
+from user_action_strategies.user_action_strategy import user_action_register, user_action_login, user_action_strategy, user_action_get_emails
 import ssl
+
+
 
 class client_Server:
     CLIENT_HANDLING_SERVER_PORT = 5000
     MAX_MESSGES_SIZE = 1024
     def __init__(self):
-        self.ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-        self.ssl_context.load_cert_chain(certfile='certificate.crt', keyfile='server\private.key')
         self.ip = self.get_ip_of_device()
         self.port = self.CLIENT_HANDLING_SERVER_PORT
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -22,16 +22,18 @@ class client_Server:
         self.server_socket.listen(5)
         print(f'Client Handling Server started on {self.ip}:{self.port}')
         self.Server_Functionality()
-
-
+    
+    def secure_socket(self, client_socket):
+        ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+        ssl_context.load_cert_chain(certfile='certificate.crt', keyfile='server\private.key')
+        secured_client_socket = ssl_context.wrap_socket(client_socket, server_side=True)
+        return secured_client_socket
+    
     def Server_Functionality(self):
         while True:
             client_socket, client_address = self.server_socket.accept()
             print(f'Connection from {client_address[0]}:{client_address[1]}')
-
-            secured_client_socket = self.ssl_context.wrap_socket(client_socket, server_side=True)
-
-
+            secured_client_socket =  self.secure_socket(client_socket)
             thread = threading.Thread(target=self._handle_client_thread, args=(secured_client_socket,))
             thread.start()
 
@@ -72,10 +74,6 @@ class client_Server:
              # print("No strategy executed.")
              # pass
 
-    def send_data(self, client_socket, data):
-        data = json.dumps(data).encode()
-        client_socket.send(data)
-
 #region private methods
     # Added user_db_interface parameter
     def choose_strategy(self, data, user_db_interface):
@@ -87,14 +85,16 @@ class client_Server:
             self.strategy = user_action_register(user_db_interface, data)
         if strategy_name == 'login':
             self.strategy = user_action_login(user_db_interface, data)
-        if strategy_name =='send_email':
-            self.strategy = user_action_send_email(user_db_interface, data)
         if strategy_name == 'get_emails':
-            print('Get emails attempt')
             self.strategy = user_action_get_emails(user_db_interface, data)
         else:
             pass #NO STRATEGY FOUND
 
+    def send_data(self, client_socket, data):
+        data = json.dumps(data).encode()
+        client_socket.send(data)
+
+        
     def decode_data(self, data):
         return json.loads(data)
 

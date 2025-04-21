@@ -1,12 +1,10 @@
 
-
 class User:
 
 #region CTORS
     def __init__(self, email, password):
         self.email = email
         self.password = password
-        self.email
 #endregion
 #region Getters
     def get_password(self):

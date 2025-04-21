@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.font as tkFont
+from email_classes.email import email
 # REMOVED: from .main_screen import main_screen # Avoid circular import at top level
 
 class send_mail_screen(tk.Frame):
@@ -145,7 +146,7 @@ class send_mail_screen(tk.Frame):
         receiver = self.receiver_entry.get().strip()
         subject = self.subject_entry.get().strip()
         body = self.body_text.get("1.0", 'end-1c').strip()
-
+        mail = email(sender, receiver, subject, body)
         # Basic validation
         if not receiver or not subject:
             self.message_label.config(text="Receiver and Subject fields cannot be empty.", fg=self.ERROR_COLOR)
@@ -156,7 +157,7 @@ class send_mail_screen(tk.Frame):
         self.update_idletasks()
 
         # --- Original Logic: Direct call ---
-        self.client.send_email_message(sender, receiver, subject, body)
+        self.client.send_email_message(mail)
 
         # --- Provide optimistic feedback ---
         self.message_label.config(text="Email send request initiated.", fg=self.SUCCESS_COLOR)

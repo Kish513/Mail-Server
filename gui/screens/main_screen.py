@@ -52,6 +52,7 @@ class main_screen(tk.Frame):
 
         # --- Welcome Message ---
         user_email = "Unknown User" # Default text
+        user_email = self.client.user.email
         try:
             # Attempt to get email from client object
             if self.client and hasattr(self.client, 'email'):
@@ -112,9 +113,6 @@ class main_screen(tk.Frame):
         button_showemail.bind("<Enter>", on_enter)
         button_showemail.bind("<Leave>", on_leave)
 
-        # --- Optional: Logout Button ---
-        # logout_button = tk.Button(center_frame, text="Logout", command=self.logout, ...)
-        # logout_button.pack(pady=(30, 10)) # More space before logout
 
 
     def load_sendemail_screen(self):
@@ -125,15 +123,3 @@ class main_screen(tk.Frame):
     def load_showemail_screen(self):
         # Manager handles destroying the current frame
         self.manager.change_screen(show_mail_screen, self.client)
-
-    # --- Optional: Logout Method ---
-    # def logout(self):
-    #     # Add any client-side logout cleanup if needed (e.g., disconnecting)
-    #     # try:
-    #     #     if self.client:
-    #     #         self.client.disconnect() # Assuming a disconnect method exists
-    #     # except Exception as e:
-    #     #     print(f"Error during logout cleanup: {e}")
-    #
-    #     from .start_screen import start_screen # Local import to avoid circular issues
-    #     self.manager.change_screen(start_screen) # Go back to start screen

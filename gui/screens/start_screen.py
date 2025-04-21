@@ -38,7 +38,7 @@ class start_screen(tk.Frame):
         # Place the label inside the center_frame
         label = tk.Label(
             center_frame,
-            text="📧 SMTP Client Pro 📧", # Added emojis for fun
+            text="📧 Kish's Mail Application 📧", # Added emojis for fun
             font=self.title_font,
             bg=BG_COLOR,       # Match background
             fg="#88C0D0"       # Nord Frost - Aurora (Cyan/Light Blue) for title

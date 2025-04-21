@@ -1,20 +1,21 @@
 
 import socket
 class smtp_message:
-    def __init__(self, sender, receiver, subject, body, server_ip="127.0.0.1"):
-        self.sender = sender
-        self.receiver = receiver
-        self.subject = subject
-        self.body = body
+    def __init__(self, mail,server_ip="127.0.0.1"):
+        self.mail = mail
         self.server_ip = server_ip
 
     def to_string(self):
+        sender = self.mail.get_sender()
+        receiver = self.mail.get_receiver()
+        subject = self.mail.get_subject()
+        body = self.mail.get_body()
         helo_command = f"HELO {self.server_ip}"
-        mail_from = f"MAIL FROM:{self.sender}"
-        rcpt_to = f"RCPT TO:{self.receiver}"
+        mail_from = f"MAIL FROM:{sender}"
+        rcpt_to = f"RCPT TO:{receiver}"
         data_command = "DATA"
-        email_headers = f"Subject: {self.subject}\nFrom: {self.sender}\nTo: {self.receiver}\n"
-        email_body = f"\n{self.body}\n"
+        email_headers = f"Subject: {subject}\nFrom: {sender}\nTo: {receiver}\n"
+        email_body = f"\n{body}\n"
         end_of_message = "."
         quit_command = "QUIT"
 

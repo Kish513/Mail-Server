@@ -2,13 +2,14 @@ import sqlite3
 from HelperClasses.User import User
 from email_classes.email import email
 class UserDBInterface:
-    #region ctors
+
     def __init__(self):
         self.connection = sqlite3.connect('db\\users.db')
         self.cursor = self.connection.cursor()
-    #endregion
-    #region Public methods
+
+
     def register_user(self, user):
+        #get the user's email and password from the user object
         user_email = user.get_email()
         user_password = user.get_password()
         try:
@@ -19,6 +20,7 @@ class UserDBInterface:
             return False
 
     def get_user_by_email(self, user_email):
+        #get the user's email from the user object
         self.cursor.execute('''SELECT * FROM users WHERE user_email =?''', (user_email))
         user_data = self.cursor.fetchone()
         if user_data is None:
@@ -26,6 +28,7 @@ class UserDBInterface:
         return User(user_data[0], user_data[1])
     
     def login_user(self, user_to_login):
+        #get the user's email and password from the user object
         user_email = user_to_login.get_email()
         user_password = user_to_login.get_password()
         self.cursor.execute('''SELECT * FROM users WHERE user_email =? AND user_password =?''', (user_email, user_password))
@@ -35,6 +38,7 @@ class UserDBInterface:
         return True
     
     def send_email_to_db(self, email):
+        #get the email's sender, receiver, subject, and body from the email object
         sender = email.get_sender()
         receiver = email.get_receiver()
         subject = email.get_subject()
@@ -48,6 +52,7 @@ class UserDBInterface:
         self.commit_changes()
     
     def get_emails_by_adress(self, email_adress):
+        #get the user's email from the user object
         self.cursor.execute('''
         SELECT * FROM mails WHERE receiver_address =?;
         ''', (email_adress,))
@@ -57,20 +62,13 @@ class UserDBInterface:
 
     #region Private methods
     def commit_changes(self):
+        #commit all changes made to the database
         self.connection.commit()
 
-    def change_somthing_in_db(self):
-        self.cursor.execute("PRAGMA foreign_keys = ON;")
-        self.cursor.execute('''
-            CREATE TABLE IF NOT EXISTS mails (
-                sender_address TEXT NOT NULL,
-                receiver_address TEXT NOT NULL,
-                subject TEXT NOT NULL,
-                body TEXT NOT NULL,
-                FOREIGN KEY (sender_address) REFERENCES users(email_address) ON DELETE CASCADE,
-                FOREIGN KEY (receiver_address) REFERENCES users(email_address) ON DELETE CASCADE
-            );
-        ''')
-        self.connection.commit()
-    #endregion
+    def delete_all_data(self):
+        #delete all data from both tables (users and mails)
+        self.cursor.execute("DELETE FROM mails;")
+        self.cursor.execute("DELETE FROM users;")
+        self.commit_changes()
+
 

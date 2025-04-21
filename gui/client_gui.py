@@ -1,49 +1,39 @@
-import tkinter as tk
-from tkinter import ttk
-from client.client import Client
-from time import sleep
+import tkinter as tk  # tkinter is how we build windows and GUI in Python
+from client.client import Client  # this is the email client logic
+from time import sleep  # might be used for delays or loading effects
 
+# this is the main app window
 class SMTP_client_gui(tk.Tk):
     def __init__(self):
-        super().__init__()
-        self.current_screen = None
-        self.geometry("600x450")  # Increased default size
-        self.title("SMTP Client")
-        self.configure(bg="#f4f4f4")
-        
+        super().__init__()  # setup the window
+
+        self.current_screen = None  # holds whatever screen is showing right now
+
+        self.geometry("600x450")  # sets window size
+        self.title("SMTP Client")  # sets the text in the title bar
+        self.configure(bg="#f4f4f4")  # light grey background
+
+    #switches the current screen to a new one
     def change_screen(self, screen, client=None):
         if self.current_screen:
-            self.current_screen.destroy()
-        
+            self.current_screen.destroy()  # removes old screen
+
+        # create the new screen, might need the client object
         if client is not None:
             self.current_screen = screen(self, client)
         else:
             self.current_screen = screen(self)
-        
+
+        # show the screen and stretch it to fill space with some padding
         self.current_screen.pack(fill="both", expand=True, padx=20, pady=20)
-        self.update_idletasks()  # Ensures proper rendering
-        
+
+        self.update_idletasks()  # makes sure layout updates right away
+
+    # clears everything from the window
     def clear_screen(self):
         for widget in self.winfo_children():
             widget.destroy()
-    
+
+    #gives back the main window object
     def get_root(self):
         return self
-
-class StyledFrame(tk.Frame):
-    def __init__(self, parent):
-        super().__init__(parent, bg="#ffffff", bd=2, relief="ridge", padx=20, pady=20)
-        self.pack_propagate(False)
-        self.configure(width=500, height=400)  # Ensures a uniform size for screens
-
-class StyledButton(ttk.Button):
-    def __init__(self, parent, text, command=None):
-        super().__init__(parent, text=text, command=command, style="TButton")
-
-class StyledLabel(tk.Label):
-    def __init__(self, parent, text, font=("Arial", 12, "bold")):
-        super().__init__(parent, text=text, font=font, bg="#ffffff", fg="#333", pady=5)
-
-class StyledEntry(tk.Entry):
-    def __init__(self, parent):
-        super().__init__(parent, font=("Arial", 12), bd=2, relief="solid", width=40)
